@@ -1,0 +1,17 @@
+# Virtual environment
+.tdenv/
+venv/
+ENV/
+env/
+
+# Environment variables (contains keys/secrets)
+.env
+
+# Python cache
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Local databases, runtime data, and uploads
+data/
