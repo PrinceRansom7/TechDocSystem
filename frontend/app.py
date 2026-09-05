@@ -423,8 +423,12 @@ if prompt:
             data = None
             for line in resp.iter_lines():
                 if line and line.startswith(b"data: "):
-                    event_str = line[6:].decode("utf-8")
-                    event = json.loads(event_str)
+                    event_str = line[6:].decode("utf-8").strip()
+                    try:
+                        event = json.loads(event_str)
+                    except Exception:
+                        # In case server sent non-json error message
+                        event = {"error": event_str}
                     
                     if event.get("error"):
                         raise Exception(event["error"])

@@ -159,7 +159,7 @@ def query_stream(req: QueryRequest):
         except Exception as e:
             logger.exception("Pipeline streaming error: %s", e)
             import json
-            yield f'data: {{"error": "{str(e)}"}}\n\n'
+            yield f"data: {json.dumps({'error': str(e)})}\n\n"
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")
 

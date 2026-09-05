@@ -17,7 +17,7 @@ class Settings(BaseSettings):
 
     # ── LLM (Groq) ──────────────────────────────────────────────────────────
     groq_api_key: str = ""
-    groq_model: str = "llama-3.1-70b-versatile"
+    groq_model: str = "llama-3.1-8b-instant"
 
     # ── Embeddings (sentence-transformers, local/free) ────────────────────────
     embedding_model: str = "BAAI/bge-small-en-v1.5"  # downloaded on first run
