@@ -1,0 +1,29 @@
+services:
+  techdocsystem:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: techdocsystem-app
+    restart: unless-stopped
+    ports:
+      - "${HOST_PORT:-10000}:${PORT:-10000}"
+    env_file:
+      - .env
+    environment:
+      - PORT=${PORT:-10000}
+      - API_BASE_URL=http://127.0.0.1:8000
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - GROQ_MODEL=${GROQ_MODEL:-llama-3.1-8b-instant}
+      - TAVILY_API_KEY=${TAVILY_API_KEY:-}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL:-BAAI/bge-small-en-v1.5}
+      - CHROMA_PERSIST_DIR=/app/data/chroma_db
+      - UPLOAD_DIR=/app/data/uploads
+    volumes:
+      - ./data/chroma_db:/app/data/chroma_db
+      - ./data/uploads:/app/data/uploads
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1:8000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

@@ -4,7 +4,7 @@ FROM python:3.11-slim
 ENV PYTHONUNBUFFERED=1 \
     DEBIAN_FRONTEND=noninteractive \
     API_BASE_URL=http://127.0.0.1:8000 \
-    PORT=7860 \
+    PORT=10000 \
     HOME=/home/user
 
 # Install system dependencies
@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Set up a non-root user (Hugging Face Spaces default UID 1000)
+# Set up a non-root user
 RUN useradd -m -u 1000 user
 USER user
 ENV PATH="/home/user/.local/bin:$PATH"
@@ -34,8 +34,8 @@ RUN mkdir -p data/chroma_db data/uploads
 # Ensure startup script is executable
 RUN chmod +x start.sh
 
-# Expose Hugging Face Space default port
-EXPOSE 7860
+# Expose Render default port (10000) and alternative ports (7860, 8501)
+EXPOSE 10000 7860 8501
 
-# Run the startup script
+# Run the unified startup script
 CMD ["./start.sh"]

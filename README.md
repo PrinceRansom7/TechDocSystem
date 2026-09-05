@@ -91,14 +91,25 @@ mkdir -p data/chroma_db data/uploads
 
 ## 💻 Running the Application
 
-### Start the FastAPI backend
+### Running with Docker Compose (Recommended)
+```bash
+# 1. Ensure .env has your GROQ_API_KEY
+# 2. Build and start the unified container
+docker compose up --build
+
+# Run in background (detached mode)
+docker compose up -d
+```
+Access the application at [http://localhost:10000](http://localhost:10000).
+
+### Start the FastAPI backend (Manual Local Dev)
 ```bash
 # From TechDocSystem/ directory
 uvicorn backend.main:app --reload --port 8000
 ```
 Interactive API documentation available at: [http://localhost:8000/docs](http://localhost:8000/docs)
 
-### Start the Streamlit frontend
+### Start the Streamlit frontend (Manual Local Dev)
 ```bash
 # In a separate terminal
 streamlit run frontend/app.py

@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+# Cleanup child processes on script exit or interrupt
+trap 'kill $(jobs -p) 2>/dev/null' SIGINT SIGTERM EXIT
+
 echo "=== Starting TechDocSystem Deployment ==="
 
 # 1. Start FastAPI backend on internal port 8000
@@ -17,11 +20,15 @@ for i in {1..30}; do
     sleep 1
 done
 
-# 3. Start Streamlit frontend on port 7860 (publicly exposed by Hugging Face)
-echo "Starting Streamlit frontend on 0.0.0.0:7860..."
+# Render dynamically injects $PORT (default 10000 on Render web services)
+PORT="${PORT:-10000}"
+
+# 3. Start Streamlit frontend bound to 0.0.0.0:$PORT
+echo "Starting Streamlit frontend on 0.0.0.0:${PORT}..."
 exec streamlit run frontend/app.py \
-    --server.port=7860 \
+    --server.port="${PORT}" \
     --server.address=0.0.0.0 \
     --server.enableCORS=false \
     --server.enableXsrfProtection=false \
-    --browser.gatherUsageStats=false
+    --browser.gatherUsageStats=false \
+    --server.headless=true
