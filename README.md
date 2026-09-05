@@ -1,3 +1,13 @@
+---
+title: TechDocSystem - Agentic RAG Assistant
+emoji: 📚
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # TechDocSystem - Advanced Agentic RAG Assistant
 
 A self-corrective Retrieval-Augmented Generation (RAG) system built with **LangGraph**, **FastAPI**, and **Streamlit**. Designed specifically for answering complex questions about technical documentation, codebases, and APIs with strict factual grounding.
