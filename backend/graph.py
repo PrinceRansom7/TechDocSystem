@@ -60,11 +60,12 @@ class RAGState(TypedDict):
 
 # ── LLM factory (Groq) ────────────────────────────────────────────────────────
 
-def _make_llm(settings: Settings, temperature: float = 0.0) -> ChatGroq:
+def _make_llm(settings: Settings, temperature: float = 0.0, max_tokens: int = 500) -> ChatGroq:
     return ChatGroq(
         api_key=settings.groq_api_key,
         model=settings.groq_model,
         temperature=temperature,
+        max_tokens=max_tokens,
     )
 
 
@@ -128,7 +129,7 @@ def node_query_analysis(state: RAGState, settings: Settings) -> dict:
     On first run: classify + rewrite.
     On retry: rewrite with hint to diversify.
     """
-    llm = _make_llm(settings)
+    llm = _make_llm(settings, max_tokens=150)
     original = state["original_question"]
     retries = state.get("retries", 0)
 
@@ -201,7 +202,7 @@ def node_document_grading(state: RAGState, settings: Settings) -> dict:
     Score each retrieved chunk as 'relevant' or 'irrelevant'.
     Filter and return only relevant ones.
     """
-    llm = _make_llm(settings)
+    llm = _make_llm(settings, max_tokens=20)
     question = state["original_question"]
     docs = state.get("retrieved_docs", [])
 
@@ -258,7 +259,11 @@ def node_web_search(state: RAGState, settings: Settings) -> dict:
 
     if not results:
         try:
-            from ddgs import DDGS
+            try:
+                from duckduckgo_search import DDGS
+            except ImportError:
+                # pyrefly: ignore [missing-import]
+                from ddgs import DDGS
             with DDGS() as ddgs:
                 for r in ddgs.text(query, max_results=3):
                     results.append({"content": r.get("body", ""), "source": r.get("href", "")})
@@ -373,7 +378,7 @@ def node_hallucination_check(state: RAGState, settings: Settings) -> dict:
     answer is actually supported by the retrieved context (graded_docs + web_results).
     Returns hallucination_status: 'pass' | 'fail'.
     """
-    llm = _make_llm(settings, temperature=0.0)
+    llm = _make_llm(settings, temperature=0.0, max_tokens=20)
     answer = state.get("answer", "")
     graded = state.get("graded_docs", [])
     web = state.get("web_results", [])
